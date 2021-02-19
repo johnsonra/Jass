@@ -1,0 +1,9 @@
+Package: Jass
+Title: Tools for playing the game of Jass
+Version: 0.1.0
+Authors@R: person("Randy", "Johnson", email = "johnson@hood.edu",
+                  role = c("aut", "cre"))
+Description: This package contains tools for playing a game of Jass with one or more AI players. A deep learning model with weights is included, as well as the tools used to train the model.
+Depends: R (>= 3.1.0)
+License: file LICENSE
+LazyData: true
