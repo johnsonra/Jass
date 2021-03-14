@@ -1,0 +1,4 @@
+Jass.Rproj
+app.R
+^.*\.Rproj$
+^\.Rproj\.user$
