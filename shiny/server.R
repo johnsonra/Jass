@@ -14,6 +14,7 @@ library(purrr)
 
 library(magick)
 
+root <- system('git rev-parse --show-toplevel', intern = TRUE)
 cards <- paste0(rep(c('B', 'R', 'S', 'E'), each = 9), rep(c(6:9, 'B', 'U', 'O', 'K', 'A'), 4))
 d <- format(Sys.time(), '%Y-%m-%d')
 
@@ -21,36 +22,35 @@ d <- format(Sys.time(), '%Y-%m-%d')
 shinyServer(function(input, output, session) {
     observeEvent(input$pic, {
         # clear file if it exists
-        if(file.exists(input$file))
-            file.remove(input$file)
+        if(file.exists(paste0(root, '/raw_hands/', input$file)))
+            file.remove(paste0(root, '/raw_hands/', input$file))
 
         # take picture
-        paste('ffmpeg -ss 0.5 -f avfoundation -framerate 30 -i "0" -t 1 -frames 1', input$file) %>%
+        paste('ffmpeg -ss 0.5 -f avfoundation -framerate 30 -i "0" -t 1 -frames 1',
+              paste0(root, '/raw_hands/', input$file)) %>%
             system()
 
         output$img <- renderPlot(
             {
                 par(mar = rep(0, 4))
 
-                if(file.exists(input$file))
+                if(file.exists(paste0(root, '/raw_hands/', input$file)))
                 {
-                    plot(image_read(input$file))
+                    plot(image_read(paste0(root, '/raw_hands/', input$file)))
                 }else{
-                    plot(image_read('tmp.jpg'))
+                    plot(image_read(paste0(root, '/shiny/tmp.jpg')))
                 }
             })
     })
 
     observeEvent(input$game, {
         # file name
-        updateTextInput(session, 'file', value = paste0('../raw_hands/', d, '_',
-                                                        input$game, '_', input$hand, '.jpg'))
+        updateTextInput(session, 'file', value = paste0(d, '_', input$game, '_', input$hand, '.jpg'))
     })
 
     observeEvent(input$hand, {
         # file name
-        updateTextInput(session, 'file', value = paste0('../raw_hands/', d, '_',
-                                                        input$game, '_', input$hand, '.jpg'))
+        updateTextInput(session, 'file', value = paste0(d, '_', input$game, '_', input$hand, '.jpg'))
     })
 
     observeEvent(input$sav, {
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
         {
             cat(d, ',', input$game, ',', input$hand, ',',
                 paste(as.integer(cards_in_hand), collapse = ','), '\n',
-                file = '../raw_hands/hands.csv', sep = '', append = TRUE)
+                file = paste0(root, '/raw_hands/hands.csv'), sep = '', append = TRUE)
         }else{
             print(cards_in_hand)
             warning('expecting 9 cards')
@@ -77,11 +77,11 @@ shinyServer(function(input, output, session) {
     {
         par(mar = rep(0, 4))
 
-        if(file.exists(input$file))
+        if(file.exists(paste0(root, '/raw_hands/', input$file)))
         {
-            plot(image_read(input$file))
+            plot(image_read(paste0(root, '/raw_hands/', input$file)))
         }else{
-            plot(image_read('tmp.jpg'))
+            plot(image_read(paste0(root, '/shiny/tmp.jpg')))
         }
     })
 })
