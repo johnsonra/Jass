@@ -4,3 +4,7 @@
 .Ruserdata
 *.Rproj
 .DS_store
+*.jpg
+*.csv
+*.zip
+*.RData

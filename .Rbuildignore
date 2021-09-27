@@ -2,3 +2,5 @@ Jass.Rproj
 app.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
+cards/
+shiny/

@@ -3,7 +3,10 @@
 \docType{class}
 \name{Hand}
 \alias{Hand}
+\alias{Player}
 \alias{Trick}
+\alias{Round}
+\alias{Game}
 \title{S4 classes for Jass}
 \description{
 This contains a description of classes used in the Jass package
@@ -13,6 +16,30 @@ This contains a description of classes used in the Jass package
 \describe{
 \item{\code{cards}}{A data.frame with 36 rows and the following columns: suit, face, trump (logical), and inhand (logical, indicating whether the given card is in the current hand)}
 
-\item{\code{hands}}{A list of Jass hands, each containing 1 card. Cards are placed in the list in the order they are played.}
+\item{\code{name}}{Player name (character)}
+
+\item{\code{hand}}{The player's hand}
+
+\item{\code{AI}}{Logical indicating an AI player}
+
+\item{\code{played}}{A list of Jass hands, each containing 1 card. Cards are placed in the list in player order}
+
+\item{\code{lead_suit}}{A string identifying the suit for this trick - can be overridden by Trump}
+
+\item{\code{trump}}{A string listing the suit for this round}
+
+\item{\code{trick}}{A trick object to keep track of cards on the table}
+
+\item{\code{next_player}}{An integer designating which player's turn is next}
+
+\item{\code{played}}{A list of hands containing cards won in previous tricks (one for each player or team)}
+
+\item{\code{players}}{A list of Jass Player objects, one for each player}
+
+\item{\code{game}}{A character string defining what Jass variant is being played}
+
+\item{\code{round}}{A Round object containing hands}
+
+\item{\code{score}}{An integer vector to keep track of the score for the game}
 }}
 
