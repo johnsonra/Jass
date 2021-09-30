@@ -6,3 +6,4 @@
 .DS_store
 *.jpg
 *.csv
+*.RData
