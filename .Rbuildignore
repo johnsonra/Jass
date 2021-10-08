@@ -4,3 +4,4 @@ app.R
 ^\.Rproj\.user$
 cards/
 shiny/
+training/

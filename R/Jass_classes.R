@@ -12,6 +12,15 @@ setClass("Hand",
                                       face = rep(c('A', 'K', 'O', 'U', 'B', 9:6), 4),
                                       trump = FALSE,
                                       inhand = FALSE)))
+# setValidity("Hand", function(object)
+# {
+#   if(<fail>)
+#   {
+#     return('string with failed message')
+#   }else{
+#     return(TRUE)
+#   }
+# })
 
 
 #' @name Player
