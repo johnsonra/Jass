@@ -1,21 +1,26 @@
 # train.R
-# master training script for Jass
+# main training script for Jass
 
+library(tensorflow)
+library(keras)
+library(magrittr)
+library(purrr)
+library(abind)
+library(dplyr)
+library(readr)
+library(stringr)
 
-# get root directory of the repo
+# directory paths
 root <- system('git rev-parse --show-toplevel', intern = TRUE)
+raw_images <- '/cards'
+image_gen <- '/training/data/'
 
 
 # process annotation data
-if(!file.exists(paste0(root, '/training/preprocess.RData')))
-{
-  paste0(root, '/training/preprocess.R') %>%
-    source()
-}else{
-  load(paste0(root, '/training/preprocess.RData'))
-}
+paste0(root, '/training/preprocess.R') %>%
+  source()
 
 
 # train hand recognition model
-paste0(root, '/training/hand_recognition.R') %>%
+paste0(root, '/training/card_recognition.R') %>%
   source()
