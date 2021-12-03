@@ -2,11 +2,14 @@
 % Please edit documentation in R/hand_methods.R
 \name{cards}
 \alias{cards}
+\alias{card_abbr}
 \alias{cards<-}
 \alias{trump<-}
 \alias{trump}
-\title{Display cards in a Jass Hand}
+\title{card_abbr}
 \usage{
+card_abbr(cards)
+
 cards(obj, ...)
 
 cards(x, ...) <- value
@@ -16,7 +19,9 @@ trump(x) <- value
 trump(obj, ...)
 }
 \arguments{
-\item{obj}{An object of the proper calss}
+\item{cards}{The cards slot from a hand object (or a subset)}
+
+\item{obj}{An object of the proper class}
 
 \item{...}{Other values used in specific methods (see Description)}
 
@@ -24,12 +29,17 @@ trump(obj, ...)
 
 \item{value}{A character string containing the trump suit}
 }
+\value{
+A string of abbreviated card names
+}
 \description{
+Abbreviate cards names in a hand.
+
 This generic will display a hand of Jass cards
 
 This generic will add cards to or discard cards from a hand of Jass cards
 
-Option arguments include: `draw`, which by default adds cards to the hand, but for hand objects causes the specified cards to be discarded when FALSE.
+Option arguments include: `draw`, which by default adds cards to the hand, but for hand objects causes the specified cards to be discarded by setting `draw` equal to FALSE.
 
 This generic sets Trump for the object and any hands contained in the object
 

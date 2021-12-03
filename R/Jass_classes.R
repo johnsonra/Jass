@@ -26,15 +26,11 @@ setClass("Hand",
 #' @name Player
 #' @rdname Jass-classes
 #' @slot name Player name (character)
-#' @slot hand The player's hand
 #' @slot AI Logical indicating an AI player
 setClass("Player",
-         contains = 'Hand',
          slots = c(name = 'character',
-                   hand = 'Hand',
                    AI = 'logical'),
          prototype = list(name = 'Player',
-                          hand = new('Hand'),
                           AI = TRUE)
          )
 
@@ -44,30 +40,34 @@ setClass("Player",
 #' @slot played A list of Jass hands, each containing 1 card. Cards are placed in the list in player order
 #' @slot lead_suit A string identifying the suit for this trick - can be overridden by Trump
 setClass("Trick",
-         contains = 'Player',
          slots = c(played = 'list',
                    lead_suit = 'character'),
-         prototype = list(played = list(new('Player'), new('Player'), new('Player'), new('Player')),
-                          lead_suit = character())
+         prototype = list(played = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
+                          lead_suit = '')
          )
-
 
 #' @name Round
 #' @rdname Jass-classes
 #' @slot trump A string listing the suit for this round
 #' @slot trick A trick object to keep track of cards on the table
 #' @slot next_player An integer designating which player's turn is next
-#' @slot played A list of hands containing cards won in previous tricks (one for each player or team)
+#' @slot hands A list of hands containing hand for each player this round
+#' @slot played A list of hands containing cards played by each player this round
+#' @slot won A list of hands containing cards won in previous tricks (one for each player/team)
 setClass("Round",
-         contains = 'Trick',
          slots = c(trump = 'character',
                    trick = 'Trick',
                    next_player = 'integer',
-                   played = 'list'),
+                   hands = 'list',
+                   played = 'list',
+                   won = 'list'
+                   ),
          prototype = list(trump = character(),
                           trick = new('Trick'),
                           next_player = as.integer(1),
-                          played = list(new('Hand'), new('Hand')))
+                          hands = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
+                          played = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
+                          won = list(new('Hand'), new('Hand')))
          )
 
 
@@ -78,7 +78,6 @@ setClass("Round",
 #' @slot round A Round object containing hands
 #' @slot score An integer vector to keep track of the score for the game
 setClass("Game",
-         contains = 'Round',
          slots = c(players = 'list',
                    game = 'character',
                    round = 'Round',

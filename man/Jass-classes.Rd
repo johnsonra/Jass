@@ -18,8 +18,6 @@ This contains a description of classes used in the Jass package
 
 \item{\code{name}}{Player name (character)}
 
-\item{\code{hand}}{The player's hand}
-
 \item{\code{AI}}{Logical indicating an AI player}
 
 \item{\code{played}}{A list of Jass hands, each containing 1 card. Cards are placed in the list in player order}
@@ -32,7 +30,11 @@ This contains a description of classes used in the Jass package
 
 \item{\code{next_player}}{An integer designating which player's turn is next}
 
-\item{\code{played}}{A list of hands containing cards won in previous tricks (one for each player or team)}
+\item{\code{hands}}{A list of hands containing hand for each player this round}
+
+\item{\code{played}}{A list of hands containing cards played by each player this round}
+
+\item{\code{won}}{A list of hands containing cards won in previous tricks (one for each player/team)}
 
 \item{\code{players}}{A list of Jass Player objects, one for each player}
 
