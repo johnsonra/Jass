@@ -4,12 +4,14 @@
 \alias{pick_random_valid_card}
 \title{Pick a random, valid card to play}
 \usage{
-pick_random_valid_card(trk, h)
+pick_random_valid_card(trk, h, ...)
 }
 \arguments{
 \item{trk}{A Trick object}
 
 \item{h}{A Hand object}
+
+\item{...}{Other arguments that are ignored by this function}
 }
 \value{
 A character value of the card to play

@@ -10,10 +10,11 @@
 #'
 #' @param trk A Trick object
 #' @param h A Hand object
+#' @param ... Other arguments that are ignored by this function
 #' @return A character value of the card to play
 #' @importFrom dplyr bind_rows
 #' @importFrom rlang .data
-pick_random_valid_card <- function(trk, h)
+pick_random_valid_card <- function(trk, h, ...)
 {
   if(trk@lead_suit == '')
   {

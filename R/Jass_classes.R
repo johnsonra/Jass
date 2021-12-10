@@ -52,22 +52,19 @@ setClass("Trick",
 #' @slot trick A trick object to keep track of cards on the table
 #' @slot next_player An integer designating which player's turn is next
 #' @slot hands A list of hands containing hand for each player this round
-#' @slot played A list of hands containing cards played by each player this round
 #' @slot won A list of hands containing cards won in previous tricks (one for each player/team)
 setClass("Round",
          slots = c(trump = 'character',
                    trick = 'Trick',
                    next_player = 'integer',
                    hands = 'list',
-                   played = 'list',
                    won = 'list'
                    ),
          prototype = list(trump = character(),
                           trick = new('Trick'),
                           next_player = as.integer(1),
                           hands = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
-                          played = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
-                          won = list(new('Hand'), new('Hand')))
+                          won = list(`Team 1` = new('Hand'), `Team 2` = new('Hand')))
          )
 
 
@@ -77,13 +74,16 @@ setClass("Round",
 #' @slot game A character string defining what Jass variant is being played
 #' @slot round A Round object containing hands
 #' @slot score An integer vector to keep track of the score for the game
+#' @slot start An integer indicating which player will start the current round (this is incremented when `deal()` is called on a Game object).
 setClass("Game",
          slots = c(players = 'list',
                    game = 'character',
                    round = 'Round',
-                   score = 'integer'),
+                   score = 'integer',
+                   start = 'integer'),
          prototype = list(players = list(new('Player'), new('Player'), new('Player'), new('Player')),
                           game = 'Cross Jass',
                           round = new('Round'),
-                          score = as.integer(c(0,0)))
+                          score = as.integer(c(`Team 1` = 0, `Team 2` = 0)),
+                          start = as.integer(0))
          )

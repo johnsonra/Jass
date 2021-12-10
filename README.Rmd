@@ -1,0 +1,81 @@
+---
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Jass
+
+The Jass package contains the tools to play a game of Jass with one or more AI players.
+
+The `training` branch contains a deep learning model to recognize cards, allowing the user to deal a physical hand of cards to a mix of real and AI players. It will also contain deep learning models for AI players.
+
+The `annotation` branch contains a shiny app for input and annotation of image data needed for training of the card recognition model. Source images will be linked here at some point.
+
+Not all of the names and terminology I use is standard, but I've tried to stick to the official rules ([see this site](https://www.swisslos.ch/en/jass/informations/jass-rules/schieber-jass.html)).
+
+## Installation
+
+```{r install, eval=FALSE}
+library(devtools)
+
+install_github('johnsonra/Jass')
+```
+
+## A sample game
+
+For now, the AI players only know how to play a valid card. It is little better than playing with a ghost hand, but the parts are in place to start working on smarter AI models.
+
+Let's start by initializing a game of Cross Jass (this is what I always heard it called, although it is also called Schieber Jass).
+
+```{r initialize Cross Jass}
+# load packages
+library(Jass)
+library(magrittr)
+
+# set the random seed so we get the same cards each time
+set.seed(2389756)
+
+g <- new('Game') %>%
+  deal()
+```
+
+Now, lets see what cards we have in our hand. By default the first player's cards are shown.
+
+```{r initial hand}
+cards(g)
+```
+
+Looks like Bells is a decent choice for trump (i.e. Schalen - my kids call them Bells).
+
+```{r pick trump}
+trump(g) <- 'Bells'
+
+# the order of the trump suit isn't correct any more - need to fix that
+cards(g)
+```
+
+We'll jump right in with the first trick. Marriages and melds (Stock and Wys) aren't yet implemented, or player 4 could get an extra 20 points for their team.
+
+```{r trick1}
+# play Ace of Bells
+g <- play(g, 'BA')
+```
+
+Now it is on to the AI players.
+
+```{r trick2}
+# player 2 (AI)
+g <- play(g)
+
+# player 3 (AI)
+g <- play(g)
+
+# player 4 (AI)
+g <- play(g)
+
+# end of trick
+status(g)
+```
