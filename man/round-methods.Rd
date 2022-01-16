@@ -10,6 +10,9 @@
 \alias{status}
 \alias{status,Round-method}
 \alias{status,Game-method}
+\alias{next_trick}
+\alias{next_trick,Round-method}
+\alias{next_trick,Game-method}
 \title{Deal a round of cards}
 \usage{
 deal(obj, game = NULL, n = NULL, ...)
@@ -27,6 +30,12 @@ status(obj, verbose = TRUE, ...)
 \S4method{status}{Round}(obj, verbose = TRUE, ...)
 
 \S4method{status}{Game}(obj, verbose = TRUE, ...)
+
+next_trick(obj, ...)
+
+\S4method{next_trick}{Round}(obj, verbose = TRUE, ...)
+
+\S4method{next_trick}{Game}(obj, verbose = TRUE, ...)
 }
 \arguments{
 \item{obj}{An object of the correct class}
@@ -51,4 +60,6 @@ Deals a round of cards.
 This generic plays a valid card based on a model provided and the current state of the game
 
 This generic returns a list containing the current game status
+
+This generic advances the round to the next trick
 }

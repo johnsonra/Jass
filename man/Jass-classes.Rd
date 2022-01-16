@@ -32,6 +32,8 @@ This contains a description of classes used in the Jass package
 
 \item{\code{hands}}{A list of hands containing hand for each player this round}
 
+\item{\code{teams}}{A vector of team names identifying the team for each player}
+
 \item{\code{won}}{A list of hands containing cards won in previous tricks (one for each player/team)}
 
 \item{\code{players}}{A list of Jass Player objects, one for each player}
@@ -39,6 +41,8 @@ This contains a description of classes used in the Jass package
 \item{\code{game}}{A character string defining what Jass variant is being played}
 
 \item{\code{round}}{A Round object containing hands}
+
+\item{\code{teams}}{A vector of team names identifying the team for each player}
 
 \item{\code{score}}{An integer vector to keep track of the score for the game}
 

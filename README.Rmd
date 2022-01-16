@@ -53,20 +53,20 @@ Looks like Bells is a decent choice for trump (i.e. Schalen - my kids call them 
 ```{r pick trump}
 trump(g) <- 'Bells'
 
-# the order of the trump suit isn't correct any more - need to fix that
+# cards are reordered according to trump precedence
 cards(g)
 ```
 
 We'll jump right in with the first trick. Marriages and melds (Stock and Wys) aren't yet implemented, or player 4 could get an extra 20 points for their team.
 
-```{r trick1}
+```{r trick1a}
 # play Ace of Bells
 g <- play(g, 'BA')
 ```
 
 Now it is on to the AI players.
 
-```{r trick2}
+```{r trick1b}
 # player 2 (AI)
 g <- play(g)
 
@@ -78,4 +78,5 @@ g <- play(g)
 
 # end of trick
 status(g)
+g <- next_trick(g)
 ```

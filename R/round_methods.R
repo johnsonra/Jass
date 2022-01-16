@@ -179,3 +179,43 @@ setMethod('status', 'Game', function(obj, verbose = TRUE, ...)
   }
 
 })
+
+
+#' Advance to the next trick
+#'
+#' @description This generic advances the round to the next trick
+#' @name next_trick
+#' @rdname round-methods
+#'
+#' @param obj An object of the correct class
+#' @param ... Other arguments for specific classes
+#'
+#' @export
+setGeneric("next_trick",
+           function(obj, ...) standardGeneric("next_trick"),
+           signature = c('obj'))
+
+#' @docType methods
+#' @rdname round-methods
+setMethod('next_trick', 'Round', function(obj, verbose = TRUE, ...)
+{
+  # decide who the winner is - they will go first in the next trick
+  obj@next_player <- cards(obj@trick)$player[1]
+
+  # move cards to the winner's pile
+  cards(obj@won[[obj@teams[obj@next_player]]]) <- cards(obj@trick)
+
+  # reset the trick
+  obj@trick <- new('Trick')
+
+  return(obj)
+})
+
+#' @docType methods
+#' @rdname round-methods
+setMethod('next_trick', 'Game', function(obj, verbose = TRUE, ...)
+{
+  obj@round <- next_trick(obj@round)
+
+  return(obj)
+})

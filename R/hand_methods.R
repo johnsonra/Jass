@@ -258,6 +258,12 @@ setMethod('trump<-', 'Round', function(x, value)
     trump(x@trick@played[[i]]) <- value
   }
 
+  # flag trump in the hand of cards won
+  for(i in 1:length(x@won))
+  {
+    trump(x@won[[i]]) <- value
+  }
+
   x
 })
 
