@@ -2,20 +2,39 @@
 % Please edit documentation in R/Cross_Jass.R
 \name{pick_random_valid_card}
 \alias{pick_random_valid_card}
+\alias{pick_random_trump}
 \title{Pick a random, valid card to play}
 \usage{
 pick_random_valid_card(trk, h, ...)
+
+pick_random_trump(g, p, strategy = "Max points", ...)
 }
 \arguments{
 \item{trk}{A Trick object}
 
 \item{h}{A Hand object}
 
-\item{...}{Other arguments that are ignored by this function}
+\item{...}{All arguments are ignored by this function}
+
+\item{g}{A game object}
+
+\item{p}{The player number who is picking trump}
+
+\item{strategy}{A string identifying the strategy to use (see details).}
 }
 \value{
 A character value of the card to play
+
+A character value of the trump suit
 }
 \description{
 This is simplest function to pick a card to play. It picks a random following the basic Jass rules.
+
+This is just about the simplest function to pick trump suit.
+}
+\details{
+Current strategies for picking a suit are:
+Random - Pick a suit completely at random
+Max points - Pick the suit worth the most points if it were trump
+Max cards - Pick the suit that has the most cards in the hand
 }

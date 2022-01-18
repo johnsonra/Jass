@@ -91,6 +91,7 @@ g <- play(g, auto = TRUE)
 
 # check status and play
 status(g)
+cards(g)
 g <- play(g, 'SB')
 
 # continue play
@@ -128,4 +129,18 @@ cards(g)
 g <- play(g, 'B9', auto = TRUE)
 
 status(g)
+```
+
+Next, lets try a fully automated round.
+
+```{r autoGame}
+set.seed(923847)
+g2 <- new('Game') %>%
+  deal()
+
+# pick trump
+trump(g2) <- pick_random_trump(g2, 2)
+
+g2 <- play(g2, auto = TRUE)
+status(g2)
 ```
