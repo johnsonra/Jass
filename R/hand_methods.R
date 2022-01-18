@@ -9,6 +9,7 @@
 #'
 #' @param cards The cards slot from a hand object (or a subset)
 #' @return A string of abbreviated card names
+#' @export
 card_abbr <- function(cards)
 {
   with(cards, paste0(substr(suit, 1, 1), face))
@@ -22,12 +23,13 @@ card_abbr <- function(cards)
 #'
 #' @param suit Character string naming suit or suit abbreviation
 #' @return
+#' @export
 suitTranslation <- function(suit)
 {
   c(Bells = 'Bells', B = 'Bells',
     Flowers = 'Flowers', `F` = 'Flowers',
     Shields = 'Shields', S = 'Shields',
-    Acorns = 'Acorns', A = 'Acornds')[suit]
+    Acorns = 'Acorns', A = 'Acorns')[suit]
 }
 
 #' card order
@@ -66,6 +68,7 @@ card_order <- function(face, trump, game = 'Cross Jass')
 #' @param trump logical indicating that trump ordering should be used
 #' @param game Character indicating the game being played. Most result in identical ordering.
 #' @return Returns a number (or numeric vector) indicating card point value(s)
+#' @export
 card_value <- function(face, trump, game = 'Cross Jass')
 {
   if(game %in% c('Cross Jass'))
@@ -126,7 +129,7 @@ setMethod('cards', 'Hand', function(obj, lead_suit = NULL, ...)
 
   # filter by inhand and return in rank order
   dplyr::filter(obj@cards, inhand) %>%
-    dplyr::arrange(dplyr::desc(trump), lead_suit, suit, rank) %>%
+    dplyr::arrange(dplyr::desc(trump), dplyr::desc(lead_suit), suit, rank) %>%
     dplyr::select(-inhand, -rank)
 })
 
@@ -242,6 +245,19 @@ setMethod('trump<-', 'Hand', function(x, value)
 
 #' @docType methods
 #' @rdname hand-methods
+setMethod('trump<-', 'Trick', function(x, value)
+{
+  for(i in 1:length(x@played))
+  {
+    trump(x@played[[i]]) <- value
+  }
+
+  x
+})
+
+
+#' @docType methods
+#' @rdname hand-methods
 setMethod('trump<-', 'Round', function(x, value)
 {
   x@trump <- suitTranslation(value)
@@ -253,10 +269,7 @@ setMethod('trump<-', 'Round', function(x, value)
   }
 
   # flag trump in the trick object
-  for(i in 1:length(x@trick@played))
-  {
-    trump(x@trick@played[[i]]) <- value
-  }
+  trump(x@trick) <- value
 
   # flag trump in the hand of cards won
   for(i in 1:length(x@won))

@@ -68,7 +68,7 @@ setMethod('deal', 'Game', function(obj, game = 'Cross Jass', n = 4, ...)
 
 #' Play a card
 #'
-#' @description This generic plays a valid card based on a model provided and the current state of the game
+#' @description This generic plays a valid card based on a model provided and the current state of the game. Optionally, play continues to advance until it is a human's turn.
 #' @name play
 #' @rdname round-methods
 #'
@@ -76,6 +76,8 @@ setMethod('deal', 'Game', function(obj, game = 'Cross Jass', n = 4, ...)
 #' @param to_play Character string identifying the card to play (for non-AI players)
 #' @param rules A function to decide which card to play (for AI players)
 #' @param state An object containing information about the game, used as input for the model defined by `rules`
+#' @param auto A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.
+#' @param verbose A logical. When TRUE, verbose output is printed.
 #' @export
 setGeneric("play",
            function(obj, ...) standardGeneric("play"),
@@ -83,31 +85,66 @@ setGeneric("play",
 
 #' @docType methods
 #' @rdname round-methods
-setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_valid_card, state = NULL, ...)
+setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_valid_card, state = NULL, auto = is.null(to_play), verbose = TRUE, ...)
 {
-  player_turn <- obj@round@next_player
-
-  # pick a card if one hasn't been supplied
-  if(is.null(to_play))
+  while(is_ai(obj, obj@round@next_player) |                       # if the next player is an AI keep going
+        (!is_ai(obj, obj@round@next_player) & !is.null(to_play))) # if called by a human, to_play should not be NULL - let it run once, will stop if hitting a human after several AI players have played
   {
-    to_play <- rules(obj@round@trick, obj@round@hands[[player_turn]], state)
+    player_turn <- obj@round@next_player
+
+    # pick a card if one hasn't been supplied
+    if(is.null(to_play))
+    {
+      to_play <- rules(obj@round@trick, obj@round@hands[[player_turn]], state)
+    }
+
+    # play the card
+    # move card from player's hand to the trick
+    cards(obj@round@hands[[player_turn]], draw = FALSE) <- to_play
+    cards(obj@round@trick@played[[player_turn]]) <- to_play
+
+    # set lead_suit if it hasn't been set yet
+    if(obj@round@trick@lead_suit == '')
+      obj@round@trick@lead_suit <- suitTranslation(substr(to_play, 1, 1))
+
+    # advance play to the next player (if all players have played, set to NA)
+    advance_play <- as.integer(c(2,3,4,1))
+    obj@round@next_player <- advance_play[player_turn]
+
+    # if auto is FALSE, break after the first time through the loop
+    if(!auto)
+      break
+
+    # if we are continuing and all players have played, print status and advance to next trick
+    if(nrow(cards(status(obj, verbose = FALSE)$trick)) >= length(obj@players))
+    {
+      stat <- status(obj, verbose = verbose)
+      obj <- next_trick(obj)
+
+      # clean up and break from the loop when the round is over
+      if(nrow(cards(obj@round@hands[[1]])) == 0)
+      {
+        # tally scores for the round
+        for(i in 1:length(obj@score))
+        {
+          obj@score[i] <- as.integer(obj@score[i] + stat$score_round[i])
+        }
+
+        # 5-point bonus for winning the last round + cards from the last trick
+        won <- g@teams[stat$trick@cards$player[1]]
+        obj@score[won] <- as.integer(obj@score[won] + 5 + with(stat$trick@cards, sum(card_value(face, trump))))
+
+        # deal a new hand for the next round
+        obj@round <- deal(new('Round'))
+        obj@start <- advance_play[obj@start]
+        obj@round@next_player <- obj@start
+        break
+      }
+    }
+
+    # reset to_play for the next time around
+    to_play <- NULL
   }
-
-  # play the card
-  # move card from player's hand to the trick
-  cards(obj@round@hands[[player_turn]], draw = FALSE) <- to_play
-  cards(obj@round@trick@played[[player_turn]]) <- to_play
-
-  # set lead_suit if it hasn't been set yet
-  if(obj@round@trick@lead_suit == '')
-    obj@round@trick@lead_suit <- suitTranslation(substr(to_play, 1, 1))
-
-  # advance play to the next player
-  advance_play <- as.integer(c(2,3,4,1))
-  obj@round@next_player <- advance_play[player_turn]
-
-  # return obj
-  # cards(obj@round@trick@played[[player_turn]])
 
   invisible(obj)
 })
@@ -141,11 +178,11 @@ setMethod('status', 'Round', function(obj, verbose = TRUE, ...)
   s <- purrr::map_dbl(1:length(obj@won), ~ with(cards(obj@won[[.x]]), sum(card_value(face, trump))))
   names(s) <- names(obj@won)
 
-  retval = list(trick = new('Hand', cards = dplyr::mutate(t, inhand = TRUE)),
-                lead_suit = obj@trick@lead_suit,
-                next_player = ifelse(nrow(t) == length(obj@hands), NA, obj@next_player),
-                trump = obj@trump,
-                score_round = s)
+  retval <- list(trick = new('Hand', cards = dplyr::mutate(t, inhand = TRUE)),
+                 lead_suit = obj@trick@lead_suit,
+                 next_player = ifelse(nrow(t) == length(obj@hands), NA, obj@next_player),
+                 trump = obj@trump,
+                 score_round = s)
 
   if(verbose)
   {
@@ -178,6 +215,7 @@ setMethod('status', 'Game', function(obj, verbose = TRUE, ...)
         paste0('    ', names(retval$score), ': ', retval$score, collapse = '\n'), sep = '')
   }
 
+  invisible(retval)
 })
 
 
@@ -207,6 +245,7 @@ setMethod('next_trick', 'Round', function(obj, verbose = TRUE, ...)
 
   # reset the trick
   obj@trick <- new('Trick')
+  trump(obj@trick) <- obj@trump
 
   return(obj)
 })

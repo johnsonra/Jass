@@ -9,9 +9,9 @@
 setClass("Hand",
          slots = c(cards = 'data.frame'),
          prototype = list(cards = data.frame(suit = rep(c('Bells', 'Flowers', 'Shields', 'Acorns'), each = 9),
-                                      face = rep(c('A', 'K', 'O', 'U', 'B', 9:6), 4),
-                                      trump = FALSE,
-                                      inhand = FALSE)))
+                          face = rep(c('A', 'K', 'O', 'U', 'B', 9:6), 4),
+                          trump = FALSE,
+                          inhand = FALSE)))
 # setValidity("Hand", function(object)
 # {
 #   if(<fail>)
@@ -90,6 +90,6 @@ setClass("Game",
                           game = 'Cross Jass',
                           round = new('Round'),
                           teams = c('Team 1', 'Team 2', 'Team 1', 'Team 2'),
-                          score = as.integer(c(`Team 1` = 0, `Team 2` = 0)),
+                          score = c(`Team 1` = as.integer(0), `Team 2` = as.integer(0)),
                           start = as.integer(0))
          )

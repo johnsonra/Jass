@@ -15,6 +15,7 @@
 \alias{cards<-,Hand-method}
 \alias{trump<-}
 \alias{trump<-,Hand-method}
+\alias{trump<-,Trick-method}
 \alias{trump<-,Round-method}
 \alias{trump<-,Game-method}
 \alias{trump}
@@ -46,6 +47,8 @@ cards(x, ...) <- value
 trump(x) <- value
 
 \S4method{trump}{Hand}(x) <- value
+
+\S4method{trump}{Trick}(x) <- value
 
 \S4method{trump}{Round}(x) <- value
 

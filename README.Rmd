@@ -39,6 +39,7 @@ library(magrittr)
 set.seed(2389756)
 
 g <- new('Game') %>%
+  set_human(1) %>%   # we'll play for player #1 all other players are AI by default
   deal()
 ```
 
@@ -67,16 +68,64 @@ g <- play(g, 'BA')
 Now it is on to the AI players.
 
 ```{r trick1b}
-# player 2 (AI)
-g <- play(g)
+# player 2 (AI) (we'll set auto to FALSE to only play one card here)
+g <- play(g, auto = FALSE)
 
 # player 3 (AI)
-g <- play(g)
+g <- play(g, auto = FALSE)
 
 # player 4 (AI)
-g <- play(g)
+g <- play(g, auto = FALSE)
 
 # end of trick
 status(g)
 g <- next_trick(g)
+status(g)
+```
+
+Now that we see the general flow, lets auto-play the first half of this trick.
+
+```{r trick2a}
+# play for players 3 and 4
+g <- play(g, auto = TRUE)
+
+# check status and play
+status(g)
+g <- play(g, 'SB')
+
+# continue play
+g <- play(g, auto = TRUE)
+status(g)
+```
+
+This has taken us through the end of the second trick. Player 3 has won the second trick again and started the third trick. We'll just zoom ahead now.
+
+```{r trick3plus}
+cards(g)
+g <- play(g, 'A7', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'B7')
+
+g <- next_trick(g)
+g <- play(g, 'F8', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'S6', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'BB', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'AB', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'B9', auto = TRUE)
+
+status(g)
 ```
