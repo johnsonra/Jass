@@ -86,7 +86,7 @@ trump(obj, ...)
 \value{
 A string of abbreviated card names
 
-
+A character string
 
 Returns a number (or numeric vector) indicating card order (1 being first, 9 being last)
 

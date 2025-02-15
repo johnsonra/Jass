@@ -22,7 +22,7 @@ card_abbr <- function(cards)
 #' @rdname hand-methods
 #'
 #' @param suit Character string naming suit or suit abbreviation
-#' @return
+#' @return A character string
 #' @export
 suitTranslation <- function(suit)
 {

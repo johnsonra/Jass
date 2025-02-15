@@ -36,6 +36,8 @@ This contains a description of classes used in the Jass package
 
 \item{\code{won}}{A list of hands containing cards won in previous tricks (one for each player/team)}
 
+\item{\code{history}}{A list of tricks, summing up game play during the current round}
+
 \item{\code{players}}{A list of Jass Player objects, one for each player}
 
 \item{\code{game}}{A character string defining what Jass variant is being played}

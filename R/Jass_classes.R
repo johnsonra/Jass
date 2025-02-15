@@ -54,20 +54,23 @@ setClass("Trick",
 #' @slot hands A list of hands containing hand for each player this round
 #' @slot teams A vector of team names identifying the team for each player
 #' @slot won A list of hands containing cards won in previous tricks (one for each player/team)
+#' @slot history A list of tricks, summing up game play during the current round
 setClass("Round",
          slots = c(trump = 'character',
                    trick = 'Trick',
                    next_player = 'integer',
                    hands = 'list',
                    teams = 'character',
-                   won = 'list'
+                   won = 'list',
+                   history = 'list'
                    ),
          prototype = list(trump = character(),
                           trick = new('Trick'),
                           next_player = as.integer(1),
                           hands = list(new('Hand'), new('Hand'), new('Hand'), new('Hand')),
                           teams = c('Team 1', 'Team 2', 'Team 1', 'Team 2'),
-                          won = list(`Team 1` = new('Hand'), `Team 2` = new('Hand')))
+                          won = list(`Team 1` = new('Hand'), `Team 2` = new('Hand')),
+                          history = list())
          )
 
 

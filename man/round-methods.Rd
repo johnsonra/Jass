@@ -10,6 +10,9 @@
 \alias{status}
 \alias{status,Round-method}
 \alias{status,Game-method}
+\alias{round_history}
+\alias{round_history,Round-method}
+\alias{round_history,Game-method}
 \alias{next_trick}
 \alias{next_trick,Round-method}
 \alias{next_trick,Game-method}
@@ -39,6 +42,12 @@ status(obj, verbose = TRUE, ...)
 
 \S4method{status}{Game}(obj, verbose = TRUE, ...)
 
+round_history(obj, ...)
+
+\S4method{round_history}{Round}(obj, verbose = TRUE, ...)
+
+\S4method{round_history}{Game}(obj, ...)
+
 next_trick(obj, ...)
 
 \S4method{next_trick}{Round}(obj, verbose = TRUE, ...)
@@ -63,6 +72,11 @@ next_trick(obj, ...)
 \item{auto}{A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.}
 
 \item{verbose}{Logical indicating that we should print out status results}
+
+\item{Other}{arguments for specific classes}
+}
+\value{
+A modified object of the same type as `obj`
 }
 \description{
 Deals a round of cards.
@@ -70,6 +84,8 @@ Deals a round of cards.
 This generic plays a valid card based on a model provided and the current state of the game. Optionally, play continues to advance until it is a human's turn.
 
 This generic returns a list containing the current game status
+
+Prints the tricks that have been played this round
 
 This generic advances the round to the next trick
 }

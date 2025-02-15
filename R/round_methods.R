@@ -13,8 +13,11 @@
 #' @param game A character value defining the game being played
 #' @param n A numeric value defining the number of players or hands to be dealt
 #' @param ... Other arguments
-#' @importFrom purrr map2
+#' 
+#' @return A modified object of the same type as `obj`
+#' 
 #' @export
+#' @importFrom purrr map2
 setGeneric('deal',
            function(obj, game = NULL, n = NULL, ...) standardGeneric('deal'),
            signature = c('obj', 'game', 'n'))
@@ -44,7 +47,7 @@ setMethod('deal', 'Round', function(obj, game = 'Cross Jass', n = 4, ...)
       })
   }
 
-  obj
+  invisible(obj)
 })
 
 #' @docType methods
@@ -219,6 +222,59 @@ setMethod('status', 'Game', function(obj, verbose = TRUE, ...)
 })
 
 
+#' Print round history
+#' 
+#' @description Prints the tricks that have been played this round
+#' @name round_history
+#' @rdname round-methods
+#' 
+#' @param obj An object of the correct class
+#' @param Other arguments for specific classes
+#' 
+#' @export
+setGeneric("round_history",
+           function(obj, ...) standardGeneric("round_history"),
+           signature = c('obj'))
+
+#' @docType methods
+#' @rdname round-methods
+setMethod('round_history', 'Round', function(obj, verbose = TRUE, ...)
+{
+  # if there is no history, return an empty hand
+  if(length(obj@history) == 0)
+  {
+    if(verbose)
+      cat("No current history\n")
+    
+    invisible((new('Hand') |> cards()))
+  }
+  
+  retval <- list()
+  
+  for(i in 1:length(obj@history))
+  {
+    retval[[i]] <- cards(obj@history[[i]])
+    
+    if(verbose)
+    {
+      cat("Trick ", i, ":\n", sep = '') 
+      print(cards(obj@history[[i]]))
+    }
+  }
+  
+  invisible(retval)
+})
+
+#' @docType methods
+#' @rdname round-methods
+setMethod('round_history', 'Game', function(obj, ...)
+{
+  retval <- round_history(obj@round)
+  
+  invisible(retval)
+})
+
+
 #' Advance to the next trick
 #'
 #' @description This generic advances the round to the next trick
@@ -243,6 +299,9 @@ setMethod('next_trick', 'Round', function(obj, verbose = TRUE, ...)
   # move cards to the winner's pile
   cards(obj@won[[obj@teams[obj@next_player]]]) <- cards(obj@trick)
 
+  # save history
+  obj@history[[length(obj@history) + 1]] <- obj@trick
+  
   # reset the trick
   obj@trick <- new('Trick')
   trump(obj@trick) <- obj@trump
