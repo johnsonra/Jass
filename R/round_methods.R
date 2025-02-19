@@ -65,7 +65,7 @@ setMethod('deal', 'Game', function(obj, game = 'Cross Jass', n = 4, ...)
 
   obj@round@next_player <- obj@start
 
-  obj
+  invisible(obj)
 })
 
 
@@ -119,7 +119,7 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
       break
 
     # if we are continuing and all players have played, print status and advance to next trick
-    if(nrow(cards(status(obj, verbose = FALSE)$trick)) >= length(obj@players))
+    if(nrow(cards(obj@round@trick)) >= length(obj@players))
     {
       stat <- status(obj, verbose = verbose)
       obj <- next_trick(obj)
@@ -134,7 +134,7 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
         }
 
         # 5-point bonus for winning the last round + cards from the last trick
-        won <- g@teams[stat$trick@cards$player[1]]
+        won <- obj@teams[stat$trick@cards$player[1]]
         obj@score[won] <- as.integer(obj@score[won] + 5 + with(stat$trick@cards, sum(card_value(face, trump))))
 
         # deal a new hand for the next round
@@ -164,7 +164,7 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
 #' @param ... Other arguments for specific classes
 #'
 #' @importFrom purrr map_dbl
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate filter
 #' @export
 setGeneric("status",
            function(obj, verbose = TRUE, ...) standardGeneric("status"),
@@ -172,29 +172,46 @@ setGeneric("status",
 
 #' @docType methods
 #' @rdname round-methods
+#' @importFrom utils capture.output
 setMethod('status', 'Round', function(obj, verbose = TRUE, ...)
 {
-  # Cards on the table
-  t <- cards(obj@trick)
+  # take care of annoying no visible binding notes
+  if(FALSE)
+    inhand <- NULL
+  
+  # Cards on the table              only display cards that are on the table
+  trk <- dplyr::mutate(cards(obj@trick), inhand = TRUE) |>
+    dplyr::select(-inhand)
+  
+  if(verbose) # assume this is for human viewing in the console
+  {
+    trk <- capture.output(print(trk))
+  }else{
+    trk <- c(paste("Lead suit:", obj@trick@lead_suit),
+             paste("Player", trk$player, 'played the', faceTranslation(trk$face), 'of', trk$suit))
+  }
 
   # current score for the round
-  s <- purrr::map_dbl(1:length(obj@won), ~ with(cards(obj@won[[.x]]), sum(card_value(face, trump))))
-  names(s) <- names(obj@won)
+  scr <- purrr::map_dbl(1:length(obj@won), ~ with(cards(obj@won[[.x]]), sum(card_value(face, trump))))
+  names(scr) <- names(obj@won)
+  
+  if(verbose)
+  {
+    scr <- capture.output(print(scr))
+  }else{
+    scr <- paste(names(scr), 'has', scr, 'points in the round')
+  }
 
-  retval <- list(trick = new('Hand', cards = dplyr::mutate(t, inhand = TRUE)),
-                 lead_suit = obj@trick@lead_suit,
-                 next_player = ifelse(nrow(t) == length(obj@hands), NA, obj@next_player),
-                 trump = obj@trump,
-                 score_round = s)
+  retval <- c('Cards on the table:',
+              trk,
+              paste('\nNext player:', obj@next_player),
+              paste('\nTrump suit:', obj@trump),
+              '\nCurrent score for the round:',
+              scr)
 
   if(verbose)
   {
-    cat('Cards on the table:\n')
-    print(cards(retval$trick, retval$lead_suit))
-    cat('\nNext player:', retval$next_player, '\n')
-    cat('\nTrump:', retval$trump, '\n')
-    cat('\nCurrent score for the round:\n',
-        paste0('    ', names(s), ': ', s, collapse = '\n'), sep = '')
+    cat(retval, sep = '\n')
   }
 
   invisible(retval)
@@ -202,23 +219,30 @@ setMethod('status', 'Round', function(obj, verbose = TRUE, ...)
 
 #' @docType methods
 #' @rdname round-methods
+#' @importFrom utils capture.output
 setMethod('status', 'Game', function(obj, verbose = TRUE, ...)
 {
-  retval <- status(obj@round, verbose = FALSE)
+  retval <- status(obj@round, verbose)
 
-  retval$score <- obj@score + retval$score_round
+  game_score <- obj@score + 
+    purrr::map_dbl(1:length(obj@round@won), ~ with(cards(obj@round@won[[.x]]), sum(card_value(face, trump))))
 
   if(verbose)
   {
-    cat('Cards on the table:\n')
-    print(cards(retval$trick, retval$lead_suit))
-    cat('\nNext player:', retval$next_player, '\n')
-    cat('\nTrump:', retval$trump, '\n')
-    cat('\nCurrent game score:\n',
-        paste0('    ', names(retval$score), ': ', retval$score, collapse = '\n'), sep = '')
+    game_score <- capture.output(print(game_score))
+  }else{
+    game_score <- paste(names(game_score), 'has', game_score, 'points in the round')
   }
+  
+  game_score <- c('\nCurrent game score:',
+                  game_score)
 
-  invisible(retval)
+  if(verbose)
+  {
+    cat(game_score, sep = '\n')
+  }
+  
+  invisible(c(retval, game_score))
 })
 
 
@@ -229,7 +253,8 @@ setMethod('status', 'Game', function(obj, verbose = TRUE, ...)
 #' @rdname round-methods
 #' 
 #' @param obj An object of the correct class
-#' @param Other arguments for specific classes
+#' @param ... Other arguments for specific classes
+#' @param verbose Logical. Print output to the screen when TRUE
 #' 
 #' @export
 setGeneric("round_history",
@@ -283,6 +308,7 @@ setMethod('round_history', 'Game', function(obj, ...)
 #'
 #' @param obj An object of the correct class
 #' @param ... Other arguments for specific classes
+#' @param verbose Logical. Print output to the screen when TRUE
 #'
 #' @export
 setGeneric("next_trick",

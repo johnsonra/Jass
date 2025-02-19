@@ -58,9 +58,14 @@ pick_random_valid_card <- function(trk, h, ...)
 #' Max cards - Pick the suit that has the most cards in the hand
 #' @return A character value of the trump suit
 #' @importFrom purrr map
+#' @importFrom stats runif
 #' @export
 pick_random_trump <- function(g, p, strategy = 'Max points', ...)
 {
+  # take care of no visible binding notes
+  if(FALSE)
+    suit <- NULL
+  
   # otherwise 'Random'
   scores <- runif(4)
 

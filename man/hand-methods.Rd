@@ -5,6 +5,7 @@
 \alias{cards}
 \alias{card_abbr}
 \alias{suitTranslation}
+\alias{faceTranslation}
 \alias{card_order}
 \alias{card_value}
 \alias{cards,Hand-method}
@@ -25,6 +26,8 @@
 card_abbr(cards)
 
 suitTranslation(suit)
+
+faceTranslation(face)
 
 card_order(face, trump, game = "Cross Jass")
 
@@ -88,6 +91,8 @@ A string of abbreviated card names
 
 A character string
 
+A character strings
+
 Returns a number (or numeric vector) indicating card order (1 being first, 9 being last)
 
 Returns a number (or numeric vector) indicating card point value(s)
@@ -96,6 +101,8 @@ Returns a number (or numeric vector) indicating card point value(s)
 Abbreviate cards names in a hand.
 
 Translate between suit names and abbreviations
+
+Translate between face names and abbreviations
 
 Return the order of cards for trump/non-trump suits
 

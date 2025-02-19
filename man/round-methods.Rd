@@ -71,9 +71,7 @@ next_trick(obj, ...)
 
 \item{auto}{A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.}
 
-\item{verbose}{Logical indicating that we should print out status results}
-
-\item{Other}{arguments for specific classes}
+\item{verbose}{Logical. Print output to the screen when TRUE}
 }
 \value{
 A modified object of the same type as `obj`

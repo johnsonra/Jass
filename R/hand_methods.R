@@ -32,6 +32,29 @@ suitTranslation <- function(suit)
     Acorns = 'Acorns', A = 'Acorns')[suit]
 }
 
+
+#' faceTranslation
+#' 
+#' @description Translate between face names and abbreviations
+#' @name faceTranslation
+#' @rdname hand-methods
+#'
+#' @param face a character string naming face or face abbreviations. If a number is given, it will be turned into a character value.
+#' @return A character strings
+#' @export
+faceTranslation <- function(face)
+{
+  c(Ace = 'A', A = 'Ace',
+    King = 'K', K = 'King',
+    Ober = 'O', O = 'Ober',
+    Under = 'U', U = 'Under',
+    Banner = 'B', B = 'Banner',
+    `9` = '9',
+    `8` = '8',
+    `6` = '6')[as.character(face)]
+}
+
+
 #' card order
 #'
 #' @description Return the order of cards for trump/non-trump suits
@@ -95,11 +118,7 @@ card_value <- function(face, trump, game = 'Cross Jass')
 #' @param player An integer indicating the player who's hand should be displayed (ignored when not needed)
 #' @param lead_suit A character defining the suit that was lead in the current trick (ignored when NULL)
 #'
-#' @importFrom dplyr filter
-#' @importFrom dplyr mutate
-#' @importFrom dplyr arrange
-#' @importFrom dplyr desc
-#' @importFrom dplyr select
+#' @importFrom dplyr filter mutate arrange desc select
 #' @export
 setGeneric("cards",
            function(obj, ...) standardGeneric("cards"),
