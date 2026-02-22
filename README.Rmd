@@ -19,9 +19,7 @@ Not all of the names and terminology I use is standard, but I've tried to stick 
 ## Installation
 
 ```{r install, eval=FALSE}
-library(devtools)
-
-install_github('johnsonra/Jass')
+devtools::install_github('johnsonra/Jass')
 ```
 
 ## A sample game
@@ -33,13 +31,12 @@ Let's start by initializing a game of Cross Jass (this is what I always heard it
 ```{r initialize Cross Jass}
 # load packages
 library(Jass)
-library(magrittr)
 
 # set the random seed so we get the same cards each time
 set.seed(2389756)
 
-g <- new('Game') %>%
-  set_human(1) %>%   # we'll play for player #1 all other players are AI by default
+g <- new('Game') |>
+  set_human(1) |>    # we'll play for player #1 all other players are AI by default
   deal()
 ```
 
@@ -49,7 +46,7 @@ Now, lets see what cards we have in our hand. By default the first player's card
 cards(g)
 ```
 
-Looks like Bells is a decent choice for trump (i.e. Schalen - my kids call them Bells).
+Looks like Bells is a decent choice for trump (i.e. Schellen).
 
 ```{r pick trump}
 trump(g) <- 'Bells'
@@ -58,7 +55,22 @@ trump(g) <- 'Bells'
 cards(g)
 ```
 
-We'll jump right in with the first trick. Marriages and melds (Stock and Wys) aren't yet implemented, or player 4 could get an extra 20 points for their team.
+Before the first card is played, we can check for melds (Stock and Wys). Each player declares any sequences of three or more cards in the same suit, four-of-a-kind combinations, or a marriage (King + Ober in the trump suit). Only the team with the highest individual meld scores all of their combined meld points.
+
+```{r meld}
+meld_result <- meld(g)
+
+# See what each player can declare
+lapply(meld_result$player_melds, function(m) {
+  if(length(m) == 0) return("No melds")
+  sapply(m, function(x) paste(x$type, x$points, 'pts'))
+})
+
+# Which team scores, and how much?
+meld_result$team_scores
+```
+
+We'll jump right in with the first trick.
 
 ```{r trick1a}
 # play Ace of Bells

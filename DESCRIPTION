@@ -8,5 +8,5 @@ Depends: R (>= 3.1.0)
 Imports: methods, dplyr, magrittr, rlang, purrr
 License: file LICENSE
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
