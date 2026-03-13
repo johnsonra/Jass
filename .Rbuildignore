@@ -1,0 +1,11 @@
+Jass.Rproj
+app.R
+^.*\.Rproj$
+^\.Rproj\.user$
+cards/
+shiny/
+training/
+raw_hands/
+README.Rmd
+data-raw/
+.github/

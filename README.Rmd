@@ -1,0 +1,158 @@
+---
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Jass
+
+The Jass package contains the tools to play a game of Jass with one or more AI players.
+
+The `training` branch contains a deep learning model to recognize cards, allowing the user to deal a physical hand of cards to a mix of real and AI players. It will also contain deep learning models for AI players.
+
+The `annotation` branch contains a shiny app for input and annotation of image data needed for training of the card recognition model. Source images will be linked here at some point.
+
+Not all of the names and terminology I use is standard, but I've tried to stick to the official rules ([see this site](https://www.swisslos.ch/en/jass/informations/jass-rules/schieber-jass.html)).
+
+## Installation
+
+```{r install, eval=FALSE}
+devtools::install_github('johnsonra/Jass')
+```
+
+## A sample game
+
+For now, the AI players only know how to play a valid card. It is little better than playing with a ghost hand, but the parts are in place to start working on smarter AI models.
+
+Let's start by initializing a game of Cross Jass (this is what I always heard it called, although it is also called Schieber Jass).
+
+```{r initialize Cross Jass}
+# load packages
+library(Jass)
+
+# set the random seed so we get the same cards each time
+set.seed(2389756)
+
+g <- new('Game') |>
+  set_human(1) |>    # we'll play for player #1 all other players are AI by default
+  deal()
+```
+
+Now, lets see what cards we have in our hand. By default the first player's cards are shown.
+
+```{r initial hand}
+cards(g)
+```
+
+Looks like Bells is a decent choice for trump (i.e. Schellen).
+
+```{r pick trump}
+trump(g) <- 'Bells'
+
+# cards are reordered according to trump precedence
+cards(g)
+```
+
+Before the first card is played, we can check for melds (Stock and Wys). Each player declares any sequences of three or more cards in the same suit, four-of-a-kind combinations, or a marriage (King + Ober in the trump suit). Only the team with the highest individual meld scores all of their combined meld points.
+
+```{r meld}
+meld_result <- meld(g)
+
+# See what each player can declare
+lapply(meld_result$player_melds, function(m) {
+  if(length(m) == 0) return("No melds")
+  sapply(m, function(x) paste(x$type, x$points, 'pts'))
+})
+
+# Which team scores, and how much?
+meld_result$team_scores
+```
+
+We'll jump right in with the first trick.
+
+```{r trick1a}
+# play Ace of Bells
+g <- play(g, 'BA')
+```
+
+Now it is on to the AI players.
+
+```{r trick1b}
+# player 2 (AI) (we'll set auto to FALSE to only play one card here)
+g <- play(g, auto = FALSE)
+
+# player 3 (AI)
+g <- play(g, auto = FALSE)
+
+# player 4 (AI)
+g <- play(g, auto = FALSE)
+
+# end of trick
+status(g)
+g <- next_trick(g)
+status(g)
+```
+
+Now that we see the general flow, lets auto-play the first half of this trick.
+
+```{r trick2a}
+# play for players 3 and 4
+g <- play(g, auto = TRUE)
+
+# check status and play
+status(g)
+cards(g)
+g <- play(g, 'SB')
+
+# continue play
+g <- play(g, auto = TRUE)
+status(g)
+```
+
+This has taken us through the end of the second trick. Player 3 has won the second trick again and started the third trick. We'll just zoom ahead now.
+
+```{r trick3plus}
+cards(g)
+g <- play(g, 'A7', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'B7')
+
+g <- next_trick(g)
+g <- play(g, 'F8', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'S6', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'BB', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'AB', auto = TRUE)
+
+status(g)
+cards(g)
+g <- play(g, 'B9', auto = TRUE)
+
+status(g)
+```
+
+Next, lets try a fully automated round.
+
+```{r autoGame}
+set.seed(923847)
+g2 <- new('Game') %>%
+  deal()
+
+# pick trump
+trump(g2) <- pick_random_trump(g2, 2)
+
+g2 <- play(g2, auto = TRUE)
+status(g2)
+```
