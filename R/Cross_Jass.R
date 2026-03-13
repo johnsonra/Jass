@@ -19,10 +19,9 @@ pick_random_valid_card <- function(trk, h, ...)
 {
   if(trk@lead_suit == '')
   {
-    cards(h) %>%
-      card_abbr() %>%
-      sample(size = 1) %>%
-      return()
+    return(cards(h) |>
+           card_abbr() |>
+           sample(size = 1))
   }else{
     # any cards with lead_suit?
     valid <- filter(cards(h), .data$suit == trk@lead_suit)
@@ -32,13 +31,12 @@ pick_random_valid_card <- function(trk, h, ...)
       valid <- cards(h)
 
     # you can always play trump
-    valid <- filter(cards(h), .data$trump) %>%
-      bind_rows(valid) %>%
+    valid <- filter(cards(h), .data$trump) |>
+      bind_rows(valid) |>
       unique()
 
-    card_abbr(valid) %>%
-      sample(size = 1) %>%
-      return()
+    return(card_abbr(valid) |>
+           sample(size = 1))
   }
 }
 

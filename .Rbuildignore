@@ -8,3 +8,4 @@ training/
 raw_hands/
 README.Rmd
 data-raw/
+.github/

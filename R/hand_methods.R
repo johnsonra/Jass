@@ -147,8 +147,8 @@ setMethod('cards', 'Hand', function(obj, lead_suit = NULL, ...)
                              rank = card_order(face, trump))
 
   # filter by inhand and return in rank order
-  dplyr::filter(obj@cards, inhand) %>%
-    dplyr::arrange(dplyr::desc(trump), dplyr::desc(lead_suit), suit, rank) %>%
+  dplyr::filter(obj@cards, inhand) |>
+    dplyr::arrange(dplyr::desc(trump), dplyr::desc(lead_suit), suit, rank) |>
     dplyr::select(-inhand, -rank)
 })
 
@@ -158,12 +158,12 @@ setMethod('cards', 'Hand', function(obj, lead_suit = NULL, ...)
 setMethod('cards', 'Trick', function(obj, ...)
 {
   # gather all cards played by player
-  jointHand <- purrr::map_dfr(1:length(obj@played), ~ cards(obj@played[[.x]], obj@lead_suit) %>%
-                                                      dplyr::mutate(player = .x)) %>%
+  jointHand <- purrr::map_dfr(1:length(obj@played), ~ cards(obj@played[[.x]], obj@lead_suit) |>
+                                                      dplyr::mutate(player = .x)) |>
     mutate(inhand = TRUE)
 
   # display cards on the table
-  new('Hand', cards = jointHand) %>%
+  new('Hand', cards = jointHand) |>
     cards(obj@lead_suit)
 })
 
@@ -316,7 +316,6 @@ setMethod('trump<-', 'Game', function(x, value)
 #' @rdname hand-methods
 #'
 #' @param obj An object of the proper class
-#' @importFrom magrittr %>%
 #' @importFrom dplyr select
 #' @export
 setGeneric("trump",
@@ -330,8 +329,8 @@ setMethod('trump', 'Hand', function(obj, ...)
   suit <- NULL # avoid no visible binding error for `suit` column of `x`
 
   # set trump
-  filter(obj@cards, trump) %>%
-    dplyr::select(suit) %>%
-    unique() %>%
+  filter(obj@cards, trump) |>
+    dplyr::select(suit) |>
+    unique() |>
     unlist()
 })
