@@ -161,3 +161,16 @@ trump(g2) <- pick_random_trump(g2, 2)
 g2 <- play(g2, auto = TRUE)
 status(g2)
 ```
+
+Now let's try a game with Gemini.
+
+```{r gemini}
+set.seed(9238476)
+g3 <- new('Game') |>
+  set_human(1) |>    # we'll play for player #1 all other players are AI by default
+  deal()
+
+trump(g3) <- 'Flowers'
+
+g3 <- play(g3, 'FO', auto = TRUE, rules = pick_card_gemini, state = g3)
+```

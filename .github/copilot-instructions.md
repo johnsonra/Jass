@@ -77,8 +77,6 @@ Only the team with the highest individual meld scores their combined team meld p
 
 **`cards()` is the central accessor.** It filters to `inhand == TRUE`, sorts by trump → lead suit → suit → rank, and is overloaded for `Hand`, `Trick`, `Round`, and `Game`. The replacement form `cards<-` accepts a character vector of abbreviations, a `data.frame`, or a `Hand`; `draw = FALSE` discards instead of draws.
 
-**Both `%>%` and `|>` are used.** `magrittr` is an explicit import; don't remove it. New code may use either pipe.
-
 **`invisible()` on mutating methods.** Functions that return a modified object (e.g., `deal`, `play`, `next_trick`) return `invisible(obj)` so the caller must assign the result (`g <- play(g)`).
 
 **Avoid `no visible binding` notes.** When using `dplyr` verbs with bare column names, declare them as `NULL` at the top of the function (e.g., `inhand <- NULL`), matching the existing pattern in the codebase.

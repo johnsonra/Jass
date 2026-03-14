@@ -276,7 +276,7 @@ setMethod('round_history', 'Round', function(obj, verbose = TRUE, ...)
     if(verbose)
       cat("No current history\n")
     
-    invisible((new('Hand') |> cards()))
+    return(invisible((new('Hand') |> cards())))
   }
   
   retval <- list()
@@ -299,7 +299,7 @@ setMethod('round_history', 'Round', function(obj, verbose = TRUE, ...)
 #' @rdname round-methods
 setMethod('round_history', 'Game', function(obj, ...)
 {
-  retval <- round_history(obj@round)
+  retval <- round_history(obj@round, ...)
   
   invisible(retval)
 })
