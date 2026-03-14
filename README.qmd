@@ -1,10 +1,6 @@
 ---
-output: md_document
+format: gfm
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # Jass
 
@@ -28,10 +24,19 @@ For now, the AI players only know how to play a valid card. It is little better 
 
 Let's start by initializing a game of Cross Jass (this is what I always heard it called, although it is also called Schieber Jass).
 
-```{r initialize Cross Jass}
-# load packages
-library(Jass)
+```{r setup}
+#| include: false
+if(!require(Jass))
+  devtools::load_all()
+```
 
+```{r}
+#| eval: false
+# load package
+library(Jass)
+```
+
+```{r initialize Cross Jass}
 # set the random seed so we get the same cards each time
 set.seed(2389756)
 
@@ -147,7 +152,7 @@ Next, lets try a fully automated round.
 
 ```{r autoGame}
 set.seed(923847)
-g2 <- new('Game') %>%
+g2 <- new('Game') |>
   deal()
 
 # pick trump

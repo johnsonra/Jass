@@ -121,7 +121,12 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
     # if we are continuing and all players have played, print status and advance to next trick
     if(nrow(cards(obj@round@trick)) >= length(obj@players))
     {
-      stat <- status(obj, verbose = verbose)
+      # capture round scores and last trick before next_trick() moves them
+      score_round <- purrr::map_dbl(1:length(obj@round@won),
+                                    ~ with(cards(obj@round@won[[.x]]), sum(card_value(face, trump))))
+      last_trick <- obj@round@trick
+
+      status(obj, verbose = verbose)
       obj <- next_trick(obj)
 
       # clean up and break from the loop when the round is over
@@ -130,12 +135,12 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
         # tally scores for the round
         for(i in 1:length(obj@score))
         {
-          obj@score[i] <- as.integer(obj@score[i] + stat$score_round[i])
+          obj@score[i] <- as.integer(obj@score[i] + score_round[i])
         }
 
-        # 5-point bonus for winning the last round + cards from the last trick
-        won <- obj@teams[stat$trick@cards$player[1]]
-        obj@score[won] <- as.integer(obj@score[won] + 5 + with(stat$trick@cards, sum(card_value(face, trump))))
+        # 5-point bonus for winning the last trick + card values from that trick
+        won <- obj@teams[cards(last_trick)$player[1]]
+        obj@score[won] <- as.integer(obj@score[won] + 5 + with(cards(last_trick), sum(card_value(face, trump))))
 
         # deal a new hand for the next round
         obj@round <- deal(new('Round'))
