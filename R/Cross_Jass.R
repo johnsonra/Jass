@@ -40,10 +40,11 @@ validate_card_choice <- function(choice = NULL, trk, h)
   if (!is.null(choice) && choice %in% valid_abbrs)
     return(choice)
 
+  altchoice <- sample(valid_abbrs, 1)
   if(!is.null(choice))
-    warning("Invalid choice, returning a random, valid card.")
+    warning(paste0("Invalid choice (", choice, "), returning a random, valid card(", altchoice, ")."))
   
-  sample(valid_abbrs, 1)
+  return(altchoice)
 }
 
 
