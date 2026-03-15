@@ -114,9 +114,15 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
     advance_play <- as.integer(c(2,3,4,1))
     obj@round@next_player <- advance_play[player_turn]
 
-    # if auto is FALSE, break after the first time through the loop
+    # if auto is FALSE, break after the first time through the loop;
+    # but first advance to the next trick if all players have played,
+    # so that obj@round@trick is always in a clean state when we return
     if(!auto)
+    {
+      if(nrow(cards(obj@round@trick)) >= length(obj@players))
+        obj <- next_trick(obj)
       break
+    }
 
     # if we are continuing and all players have played, print status and advance to next trick
     if(nrow(cards(obj@round@trick)) >= length(obj@players))
