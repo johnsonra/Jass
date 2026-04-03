@@ -92,7 +92,7 @@ pick_card_gemini <- function(trk, h, state = NULL, ...)
   query <- paste0(
     "We are playing a game of Cross Jass (Schieber Jass), a Swiss trick-taking card game.\n",
     "Card faces: 6=6, 7=7, 8=8, 9=9, B=Banner(10), U=Under(Jack), O=Ober(Queen), K=King, A=Ace\n",
-    "Suits: B=Bells, F=Flowers, S=Shields, A=Acorns\n",
+    "Suits: L=beLls, F=Flowers, S=Shields, C=aCorns\n",
     "Trump suit: ", trump_suit, "\n",
     "Trump rules: trump cards beat all non-trump cards; ",
     "within trump, Under (U) and 9 rank highest.\n",

@@ -12,7 +12,7 @@
 #' @export
 card_abbr <- function(cards)
 {
-  with(cards, paste0(substr(suit, 1, 1), face))
+  with(cards, paste0(suitTranslation(suit, reverse = TRUE), face))
 }
 
 #' suitTranslation
@@ -22,14 +22,26 @@ card_abbr <- function(cards)
 #' @rdname hand-methods
 #'
 #' @param suit Character string naming suit or suit abbreviation
-#' @return A character string
+#' @param reverse Logical indicating a reverse lookup should be done
+#' 
+#' @return A character string with the full suit name or abbreviation when reverse is TRUE
 #' @export
-suitTranslation <- function(suit)
+suitTranslation <- function(suit, reverse = FALSE)
 {
-  c(Bells = 'Bells', B = 'Bells',
-    Flowers = 'Flowers', `F` = 'Flowers',
-    Shields = 'Shields', S = 'Shields',
-    Acorns = 'Acorns', A = 'Acorns')[suit]
+  if(reverse)
+  {
+    retval <- c(Bells = 'L', L = 'L',
+                Flowers = 'F', `F` = 'F',
+                Shields = 'S', S = 'S',
+                Acorns = 'C', C = 'C')[suit]
+  }else{
+    retval <- c(Bells = 'Bells', L = 'Bells',
+                Flowers = 'Flowers', `F` = 'Flowers',
+                Shields = 'Shields', S = 'Shields',
+                Acorns = 'Acorns', C = 'Acorns')[suit]
+  }
+
+  return(retval)
 }
 
 

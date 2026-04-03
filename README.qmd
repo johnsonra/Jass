@@ -172,5 +172,16 @@ g3 <- new('Game') |>
 
 trump(g3) <- 'Flowers'
 
-g3 <- play(g3, 'FO', auto = TRUE, rules = pick_card_gemini, state = g3)
+g3 <- play(g3, 'FO', auto = FALSE, rules = pick_card_gemini, state = g3)
+g3 <- play(g3, auto = FALSE, rules = pick_card_gemini, state = g3)
+g3 <- play(g3, auto = FALSE, rules = pick_card_gemini, state = g3)
+g3 <- play(g3, auto = FALSE, rules = pick_card_gemini, state = g3)
+
+
+g3_1 <- play(g3, auto = TRUE, rules = pick_card_gemini, state = g3)
+
+
+trk <- g3@round@trick
+h <- g3@round@hands[[4]]
+state <- g3
 ```
