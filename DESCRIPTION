@@ -15,6 +15,9 @@ Imports:
   OPsecrets,
   purrr,
   rlang
+Suggests:
+  shiny,
+  shinyjs
 License: file LICENSE
 LazyData: true
 RoxygenNote: 7.3.3
