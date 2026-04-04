@@ -80,6 +80,7 @@ setMethod('deal', 'Game', function(obj, game = 'Cross Jass', n = 4, ...)
 #' @param rules A function to decide which card to play (for AI players)
 #' @param state An object containing information about the game, used as input for the model defined by `rules`
 #' @param auto A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.
+#' @param advance_trick A logical. When \code{TRUE} (default) and \code{auto = FALSE}, \code{next_trick()} is called automatically after the fourth card is played. Set to \code{FALSE} to leave the completed trick on the table so it can be inspected before advancing.
 #' @param verbose A logical. When TRUE, verbose output is printed.
 #' @param ... Additional arguments passed to \code{rules}
 #' @export
@@ -89,7 +90,7 @@ setGeneric("play",
 
 #' @docType methods
 #' @rdname round-methods
-setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_valid_card, state = NULL, auto = is.null(to_play), verbose = TRUE, ...)
+setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_valid_card, state = NULL, auto = is.null(to_play), advance_trick = TRUE, verbose = TRUE, ...)
 {
   while(is_ai(obj, obj@round@next_player) |                       # if the next player is an AI keep going
         (!is_ai(obj, obj@round@next_player) & !is.null(to_play))) # if called by a human, to_play should not be NULL - let it run once, will stop if hitting a human after several AI players have played
@@ -120,7 +121,7 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
     # so that obj@round@trick is always in a clean state when we return
     if(!auto)
     {
-      if(nrow(cards(obj@round@trick)) >= length(obj@players))
+      if(advance_trick && nrow(cards(obj@round@trick)) >= length(obj@players))
         obj <- next_trick(obj)
       break
     }

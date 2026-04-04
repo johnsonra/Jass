@@ -71,7 +71,7 @@ Only the team with the highest individual meld scores their combined team meld p
 
 **Card abbreviation format**: first letter of suit + face value, e.g. `"BA"` = Bells Ace, `"F9"` = Flowers 9, `"SU"` = Shields Under. This string format is what `play()` and `cards<-` accept as `value`.
 
-**Suits**: `Bells`, `Flowers`, `Shields`, `Acorns` (Swiss/German deck). `suitTranslation()` maps single-letter abbreviations (`B`, `F`, `S`, `A`) to full names.
+**Suits**: `Bells`, `Flowers`, `Shields`, `Acorns` (Swiss/German deck). `suitTranslation()` maps single-letter abbreviations (`L`, `F`, `S`, `C`) to full names.
 
 **Faces**: `A`, `K`, `O` (Ober), `U` (Under), `B` (Banner/10), `9`, `8`, `7`, `6`. Trump changes both card order (U and 9 rank highest) and point values.
 

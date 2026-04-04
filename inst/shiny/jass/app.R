@@ -5,6 +5,12 @@ library(shiny)
 library(shinyjs)
 library(Jass)
 
+# Serve card PNGs at global scope (must be before ui/server definitions)
+local({
+  pkg_data <- system.file("data", package = "Jass")
+  if (nzchar(pkg_data)) shiny::addResourcePath("cards", pkg_data)
+})
+
 # ── Null-coalescing helper ───────────────────────────────────────────────────
 `%||%` <- function(x, y) if (!is.null(x) && length(x) > 0 && !is.na(x[1]) && nzchar(x[1])) x else y
 
@@ -21,15 +27,23 @@ suit_icon <- function(suit) {
     Shields = "\U0001F6E1\uFE0F", Acorns = "\U0001F330")[suit]
 }
 
-# A clickable or static card slot
+# Human-readable card label: "Under 🌰", "9 🔔", etc.
+card_label <- function(abbr) {
+  suit_name <- suitTranslation(substr(abbr, 1, 1))
+  face_name <- faceTranslation(substr(abbr, 2, 2))
+  paste0(face_name, "\u00A0", suit_icon(suit_name))
+}
+
+# A clickable or static card slot (image + text label)
 card_div <- function(abbr, clickable = TRUE, disabled = FALSE) {
   img <- tags$img(src = card_png(abbr), class = "card-img", alt = abbr)
+  lbl <- tags$div(class = "card-label", card_label(abbr))
   cls <- paste("card-slot", if (disabled) "card-disabled" else if (clickable) "card-playable" else "")
   if (clickable && !disabled) {
-    tags$div(class = cls, img,
+    tags$div(class = cls, img, lbl,
              onclick = sprintf("Shiny.setInputValue('card_click','%s',{priority:'event'})", abbr))
   } else {
-    tags$div(class = cls, img)
+    tags$div(class = cls, img, lbl)
   }
 }
 
@@ -121,7 +135,10 @@ ui <- fluidPage(
       lapply(SUITS, function(s) {
         actionButton(paste0("trump_", s), paste(suit_icon(s), s),
                      class = "btn btn-default suit-btn")
-      })
+      }),
+      hr(style = "border-color: rgba(255,255,255,0.2); margin: 20px 0;"),
+      h4(style = "color:#ddd; margin-bottom:8px;", "Your hand:"),
+      uiOutput("trump_hand_ui")
     )
   ),
 
@@ -171,6 +188,7 @@ ui <- fluidPage(
       )
     ),
     div(class = "status-bar", textOutput("status_text")),
+    uiOutput("next_trick_btn_ui"),
     uiOutput("last_trick_strip")
   ),
 
@@ -207,10 +225,6 @@ ui <- fluidPage(
 # ── Server ───────────────────────────────────────────────────────────────────
 
 server <- function(input, output, session) {
-
-  # Serve card PNGs from the package data directory
-  shiny::addResourcePath("cards",
-    system.file("data", package = "Jass"))
 
   # ── Reactive state ────────────────────────────────────────────────────────
   game        <- reactiveVal(NULL)
@@ -297,13 +311,15 @@ server <- function(input, output, session) {
     }
   }
 
-  # Fire AI turns one at a time, with a short delay between each for readability
+  # Fire AI turns one at a time, with a short delay between each for readability.
+  # Stops when a trick is complete (4 cards) — user must click Next Trick.
   advance_ai <- function() {
     g <- isolate(game())
     if (is.null(g)) return()
 
-    if (is_round_over(g)) {
-      handle_round_end(g)
+    # Trick just completed: stop and wait for user to click Next Trick
+    if (nrow(cards(g@round@trick)) >= 4L) {
+      status_msg("Trick complete \u2014 press \u2018Next Trick\u2019 to continue")
       return()
     }
 
@@ -323,8 +339,8 @@ server <- function(input, output, session) {
       g2 <- isolate(game())
       if (is.null(g2)) return()
       g2 <- tryCatch(
-        play(g2, rules = rules_fn, auto = FALSE, state = g2),
-        error = function(e) play(g2, rules = pick_random_valid_card, auto = FALSE)
+        play(g2, rules = rules_fn, auto = FALSE, advance_trick = FALSE, state = g2),
+        error = function(e) play(g2, rules = pick_random_valid_card, auto = FALSE, advance_trick = FALSE)
       )
       game(g2)
       status_msg("")
@@ -413,10 +429,28 @@ server <- function(input, output, session) {
     req(valid)
 
     prev_human(next_p)
-    g <- play(g, to_play = card_code, auto = FALSE, state = g)
+    g <- play(g, to_play = card_code, auto = FALSE, advance_trick = FALSE, state = g)
     game(g)
     status_msg("")
     advance_ai()
+  })
+
+  # ── Next Trick button ─────────────────────────────────────────────────────
+  observeEvent(input$btn_next_trick, {
+    req(phase() == "play")
+    g <- game()
+    req(!is.null(g), nrow(cards(g@round@trick)) >= 4L)
+
+    g <- next_trick(g)
+    game(g)
+
+    # After the 9th trick next_trick() pushes history to length 9 → round over
+    if (length(g@round@history) == 9L) {
+      handle_round_end(g)
+    } else {
+      status_msg("")
+      advance_ai()
+    }
   })
 
   # ── Pass screen reveal ────────────────────────────────────────────────────
@@ -516,7 +550,10 @@ server <- function(input, output, session) {
     if (nrow(trick_df) == 0) return(card_empty_div())
     row <- trick_df[trick_df$player == player_num, ]
     if (nrow(row) == 0) return(card_empty_div())
-    tags$div(class = "card-slot", tags$img(src = card_png(card_abbr(row)[1]), class = "card-img"))
+    abbr <- card_abbr(row)[1]
+    tags$div(class = "card-slot",
+             tags$img(src = card_png(abbr), class = "card-img"),
+             tags$div(class = "card-label", card_label(abbr)))
   }
 
   is_active_player <- function(player_num) {
@@ -564,6 +601,16 @@ server <- function(input, output, session) {
       span(class = "team2", paste("Team 2:", live["Team 2"], "pts"))
     )
   })
+
+  # Next Trick button — only shown when all 4 cards are on the table
+  output$next_trick_btn_ui <- renderUI({
+    req(phase() == "play")
+    g <- game()
+    if (is.null(g) || nrow(cards(g@round@trick)) < 4L) return(NULL)
+    div(style = "text-align:center; margin:10px 0;",
+        actionButton("btn_next_trick", "Next Trick \u25B6", class = "btn btn-next btn-lg"))
+  })
+  outputOptions(output, "next_trick_btn_ui", suspendWhenHidden = FALSE)
 
   # Player labels
   output$label_south <- renderUI(make_label(1L))
@@ -613,7 +660,8 @@ server <- function(input, output, session) {
       tags$summary(paste("Last trick \u2014 won by", cfg$names[winner])),
       do.call(tagList, lapply(card_abbr(df), function(a) {
         tags$div(class = "card-slot",
-                 tags$img(src = card_png(a), class = "card-img", style = "width:52px;"))
+                 tags$img(src = card_png(a), class = "card-img", style = "width:52px;"),
+                 tags$div(class = "card-label", style = "font-size:10px;", card_label(a)))
       }))
     )
   })
@@ -625,6 +673,16 @@ server <- function(input, output, session) {
     cfg <- get_cfg()
     p   <- g@round@next_player
     div(h3(paste(cfg$names[p], "\u2014 choose trump suit:")))
+  })
+
+  # Hand shown during trump selection (read-only)
+  output$trump_hand_ui <- renderUI({
+    g <- game()
+    if (is.null(g) || phase() != "trump") return(NULL)
+    p      <- g@round@next_player
+    hand_df <- cards(g, p)
+    if (nrow(hand_df) == 0) return(NULL)
+    do.call(tagList, lapply(card_abbr(hand_df), function(a) card_div(a, clickable = FALSE)))
   })
 
   # Meld table

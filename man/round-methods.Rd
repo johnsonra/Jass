@@ -32,6 +32,7 @@ play(obj, ...)
   rules = pick_random_valid_card,
   state = NULL,
   auto = is.null(to_play),
+  advance_trick = TRUE,
   verbose = TRUE,
   ...
 )
@@ -70,6 +71,8 @@ next_trick(obj, ...)
 \item{state}{An object containing information about the game, used as input for the model defined by `rules`}
 
 \item{auto}{A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.}
+
+\item{advance_trick}{A logical. When \code{TRUE} (default) and \code{auto = FALSE}, \code{next_trick()} is called automatically after the fourth card is played. Set to \code{FALSE} to leave the completed trick on the table so it can be inspected before advancing.}
 
 \item{verbose}{Logical. Print output to the screen when TRUE}
 }
