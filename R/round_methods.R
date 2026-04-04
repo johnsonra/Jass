@@ -81,6 +81,7 @@ setMethod('deal', 'Game', function(obj, game = 'Cross Jass', n = 4, ...)
 #' @param state An object containing information about the game, used as input for the model defined by `rules`
 #' @param auto A logical indicating play should continue until a human player's turn. By default, if no cards are specified in to_play, auto is TRUE.
 #' @param verbose A logical. When TRUE, verbose output is printed.
+#' @param ... Additional arguments passed to \code{rules}
 #' @export
 setGeneric("play",
            function(obj, ...) standardGeneric("play"),
@@ -98,7 +99,7 @@ setMethod('play', 'Game', function(obj, to_play = NULL, rules = pick_random_vali
     # pick a card if one hasn't been supplied
     if(is.null(to_play))
     {
-      to_play <- rules(obj@round@trick, obj@round@hands[[player_turn]], state)
+      to_play <- rules(obj@round@trick, obj@round@hands[[player_turn]], state, ...)
     }
 
     # play the card

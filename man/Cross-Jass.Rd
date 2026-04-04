@@ -11,7 +11,7 @@ validate_card_choice(choice = NULL, trk, h)
 
 pick_random_valid_card(trk, h, ...)
 
-pick_card_gemini(trk, h, state = NULL, ...)
+pick_card_gemini(trk, h, state = NULL, model = "gemini-2.5-flash-lite", ...)
 
 pick_random_trump(g, p, strategy = "Max points", ...)
 }
@@ -26,6 +26,8 @@ to simply draw a random legal card.}
 \item{...}{All arguments are ignored by this function}
 
 \item{state}{A Game or Round object providing round history and full game context. If NULL, history is omitted from the query.}
+
+\item{model}{A character string specifying the Gemini model to use. Defaults to \code{"gemini-2.5-flash-lite"}.}
 
 \item{g}{A game object}
 

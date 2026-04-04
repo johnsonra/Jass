@@ -25,7 +25,7 @@
 \usage{
 card_abbr(cards)
 
-suitTranslation(suit)
+suitTranslation(suit, reverse = FALSE)
 
 faceTranslation(face)
 
@@ -66,6 +66,8 @@ trump(obj, ...)
 
 \item{suit}{Character string naming suit or suit abbreviation}
 
+\item{reverse}{Logical indicating a reverse lookup should be done}
+
 \item{face}{Character (or character vector) indicating the face to order}
 
 \item{trump}{logical indicating that trump ordering should be used}
@@ -89,7 +91,7 @@ trump(obj, ...)
 \value{
 A string of abbreviated card names
 
-A character string
+A character string with the full suit name or abbreviation when reverse is TRUE
 
 A character strings
 

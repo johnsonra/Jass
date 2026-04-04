@@ -74,6 +74,7 @@ pick_random_valid_card<- function(trk, h, ...)
 #' @param trk A Trick object
 #' @param h A Hand object
 #' @param state A Game or Round object providing round history and full game context. If NULL, history is omitted from the query.
+#' @param model A character string specifying the Gemini model to use. Defaults to \code{"gemini-2.5-flash-lite"}.
 #' @param ... Other arguments that are ignored by this function
 #' 
 #' @details  This function assumes Gemini knows the basic Jass rules and will pick an appropriate card.
@@ -83,7 +84,7 @@ pick_random_valid_card<- function(trk, h, ...)
 #' @importFrom ai4teaching genAI_query
 #' @importFrom OPsecrets get_secret
 #' @export
-pick_card_gemini <- function(trk, h, state = NULL, ...)
+pick_card_gemini <- function(trk, h, state = NULL, model = 'gemini-2.5-flash-lite', ...)
 {
   # derive trump suit name from the hand's card flags (Trick has no trump slot)
   trump_suit <- unique(h@cards$suit[h@cards$trump])
@@ -145,7 +146,7 @@ pick_card_gemini <- function(trk, h, state = NULL, ...)
 
   # ---- query Gemini ----
   result <- genAI_query(query,
-                        model   = 'gemini-2.5-flash-lite',
+                        model   = model,
                         api_key = get_secret('GEMINI_API_KEY', 'Private', 'Gemini', 'api_key'))
 
   chosen <- trimws(result$response)
