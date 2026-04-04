@@ -19,7 +19,7 @@ local({
 # Map card abbreviation (L/F/S/C prefix) to PNG filename (B/F/S/A prefix)
 card_png <- function(abbr) {
   prefix <- c(L = "B", F = "F", S = "S", C = "A")
-  paste0(prefix[substr(abbr, 1, 1)], substr(abbr, 2, 2), ".png")
+  paste0("cards/", prefix[substr(abbr, 1, 1)], substr(abbr, 2, 2), ".png")
 }
 
 suit_icon <- function(suit) {
@@ -417,6 +417,8 @@ server <- function(input, output, session) {
     req(phase() == "play")
     g <- game()
     if (is.null(g)) return()
+    # Block card play while waiting for "Next Trick" to be pressed
+    if (nrow(cards(g@round@trick)) >= 4L) return()
     next_p <- g@round@next_player
     cfg    <- get_cfg()
     req(cfg$human[next_p])
@@ -652,8 +654,8 @@ server <- function(input, output, session) {
     winner <- g@round@next_player
     cfg    <- get_cfg()
     lines  <- paste(vapply(seq_len(nrow(df)), function(i) {
-      sprintf("P%d: %s%s", df$player[i],
-              faceTranslation(df$face[i]), " of ", df$suit[i])
+      sprintf("P%d: %s of %s", df$player[i],
+              faceTranslation(df$face[i]), df$suit[i])
     }, character(1)), collapse = "  |  ")
     tags$details(
       class = "last-trick-strip",
